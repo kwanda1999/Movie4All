@@ -28,3 +28,4 @@ C:\Users\ngwen\Movie4All\obj\Debug\net8.0\refint\Movie4All.dll
 C:\Users\ngwen\Movie4All\obj\Debug\net8.0\Movie4All.pdb
 C:\Users\ngwen\Movie4All\obj\Debug\net8.0\Movie4All.genruntimeconfig.cache
 C:\Users\ngwen\Movie4All\obj\Debug\net8.0\ref\Movie4All.dll
+C:\Users\ngwen\Movie4All\obj\Debug\net8.0\Movie4All.sourcelink.json
