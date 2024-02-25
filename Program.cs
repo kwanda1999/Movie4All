@@ -1,5 +1,13 @@
 var builder = WebApplication.CreateBuilder(args);
 
+if (builder.Environment.IsDevelopment()) {
+    builder.Services.AddDbContext <Movie4AllContext>(options=>
+        options.UseSqlite(builder.Configuration.GetConnectionString("Movie4AllContext")));
+}   else {
+    builder.Services.AddDbContext<Movie4AllContext>(options =>
+        options.UseSqlServer (builder.Configuration.GetConnectionString("ProductionMovie4AllContext")));
+}
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
@@ -25,3 +33,5 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+
