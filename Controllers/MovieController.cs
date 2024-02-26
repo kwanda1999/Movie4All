@@ -12,11 +12,33 @@ namespace Movie4All.Controllers {
             _context = context;
         }
 
-        public IActionResult Index() {
-            return View();              //controller actions
+        public async  Task<IActionResult>  Index(string movieGenre, string searchString) {
+           if (_context.Movie == null) {
+            return Problem("Entity set 'Movie4AllContext.movie' is null");
+           } 
+           IQueryable <string> genreQuery = from m in _context.Movie
+                                            orderby m.Genre
+                                            select m.Genre;
+
+            var movies = from m in _context.movie
+                         select m;
+
+            if (!string.IsNullOrEmpty(searchString))  {
+                movies = movies.Where (s=> s.Title!.Contains(searchString));
+            }
+
+            if (!string.IsNullOrEmpty(movieGenre))  {
+                movies = movies.Where(x=> x.Genre == movieGenre);
+            }
+            var movieGenreVM = newMovieGenreViewModel {
+                Genres = new SelectList(await genreQuery.Distinct().ToListAsync()),
+                Movies = await movies.ToListAsync()
+            };
+
+            return View(movieGenreVM)
         }
 
-        public IActionResult Create() {
+        public IActionResult Create([Bind("Id,Title,ReleaseDate,Genre,Price,Rating")]Movie movie) {
             return View();
         } 
 
@@ -28,11 +50,21 @@ namespace Movie4All.Controllers {
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Details (int id) {
-            return View ();
+        public async Task<IActionResult> Details (int? id) {
+
+            if (id == null) {
+                return NotFound ();
+            }
+
+                var movie = await _context.Movie
+                    .FirstOrDefaultAsync(m => m.Id == id);
+                    if (movie == null) {
+                        return NotFound();
+                        }
+            return View (movie);
         }
 
-        public IActionResult Edit (int id, Movie movie) {
+        public IActionResult Edit (int id, [Bind("Id,Title,ReleaseDate,Genre,Price,Rating")]Movie movie) {
         
             _context.Movies.Update(movie);
             _context.SaveChanges();
@@ -40,30 +72,38 @@ namespace Movie4All.Controllers {
         }
 
         public IActionResult Delete (int id) {
-            return View();
+
+            if (id=-null) {
+                return NotFound();
+            }
+
+            var movie = await _context.Movie
+                .FirstOrDefaultAsync(m=> m.Id == id);
+
+            if (movie == null) {
+                
+                return View(movie);
+            }
+            
         }
 
+
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+
         public IActionResult DeleteConfirmed (int id) {
-            
-            var movie = _context.Movies.Find(id);
-            _context.Movies.Remove(movie);
-            _context.SaveChanges();
+
+             var movie = await _context.Movie.FindAsync(id);
+             if (movie != null) {
+                _context.Movie.Remove(movie);
+             }
+             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Details(int? id) {
-            if (id==null) {
-                if (id==null) {
-                    return NotFound();
-                }
-                var movie = await _context.Movie
-                .FirstOrDefaultAsync (m=> m.Id == id);
-                if (movie == null) {
-                    return NotFound ();
-                }
-
-                return View(movie);
+       
             }
         }
-    }
-}
+    
+
+

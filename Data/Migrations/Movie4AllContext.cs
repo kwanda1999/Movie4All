@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Movie4All.Data;
 
 namespace Movie4All.Data
 {
